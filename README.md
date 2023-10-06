@@ -13,5 +13,12 @@
 > check back later for up to date progress
 
 Hermes is a proof of concept, web-based, security focused chat app.
-It's goal is to minimize the amount of information known by the server,
-by employing end to end encryption accross the board.
+The initial idea was recreating something like a discord server, but
+with security & encryption built in. 
+
+## About the cryptography...
+
+## Docs
+
+For an overview of how Hermes works, take a look
+at the [documentation](docs/README.md).

@@ -1,25 +1,45 @@
 use std::path::PathBuf;
 
-use eyre::{WrapErr, Result};
+use crate::eyre::{WrapErr, Result};
+use clap::Parser;
 
-#[derive(Debug)]
-pub struct Config {
-    pub key_path: PathBuf,
-    pub cert_path: PathBuf,
+use serde::Deserialize;
+
+#[derive(Deserialize, Debug)]
+pub struct ConfigFile {
+    pub web_root: PathBuf,
     pub port: u16,
-    pub root: PathBuf,
+    pub address: String,
+    pub tls: Option<TlsConfig>,
 }
 
-impl Config {
-    pub fn load() -> Result<Self> {
-        fn get_var(name: &str) -> Result<String> {
-            std::env::var(name).wrap_err_with(|| format!("Failed to get required environment variable '{name}'"))
-        }
-        let key_path = get_var("HERMES_KEY_PATH")?.into();
-        let cert_path = get_var("HERMES_CERT_PATH")?.into();
-        let root = get_var("HERMES_ROOT_PATH")?.into();
-        let port = get_var("PORT")?.parse()?;
+#[derive(Deserialize, Debug)]
+pub struct TlsConfig {
+    pub key_path: PathBuf,
+    pub cert_path: PathBuf,
+}
 
-        Ok(Self { key_path, cert_path, root, port })
+#[derive(Debug)]
+pub struct Environment {
+    pub conf: ConfigFile,
+}
+
+#[derive(Parser, Debug)]
+struct Cli {
+    #[arg(long="config", short='c')]
+    conf_file: Option<PathBuf>,
+}
+
+impl Environment {nq
+    pub fn load() -> Result<Self> {
+        let cli = Cli::parse();
+        let config_file = if let Some(path) = cli.conf_file {
+            path
+        } else {
+            "hermes.toml".into()
+        };
+        let content = std::fs::read_to_string(config_file).wrap_err("Failed to read config file")?;
+        let conf = toml::from_str(&content).wrap_err("Failed to parse config file")?;
+        Ok(Self { conf })
     }
 }
