@@ -1,0 +1,14 @@
+[workspace]
+members = [
+    "hermes-server"
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.0.1"
+authors = ["Mikadore"]
+description = "A proof of concept, web-based, security focused chat app."
+edition = "2021"
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/Mikadore/hermes"
